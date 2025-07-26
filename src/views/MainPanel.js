@@ -1,16 +1,39 @@
-import Button from '@enact/sandstone/Button';
-import kind from '@enact/core/kind';
-import {Panel, Header} from '@enact/sandstone/Panels';
+import React, { useState } from 'react';
+import { Panels } from '@enact/sandstone/Panels';
+import GalleryPanel from './GalleryPanel';
+import ImageViewerPanel from './ImageViewerPanel';
+import images from '../components/Images';
 
-const MainPanel = kind({
-	name: 'MainPanel',
+function MainPanel() {
+	const [panelIndex, setPanelIndex] = useState(0);
+	const [selectedIndex, setSelectedIndex] = useState(null);
 
-	render: (props) => (
-		<Panel {...props}>
-			<Header title="Hello world!" />
-			<Button>Click me</Button>
-		</Panel>
-	)
-});
+	const handleSelect = (idx) => {
+		setSelectedIndex(idx);
+		setPanelIndex(1);
+	};
+
+	const handleBackToGallery = () => {
+		setPanelIndex(0);
+		// setSelectedIndex(null);
+	};
+
+	const handleNext = () =>
+		setSelectedIndex((prev) => (prev + 1) % images.length);
+	const handlePrev = () =>
+		setSelectedIndex((prev) => (prev - 1 + images.length) % images.length);
+
+	return (
+		<Panels index={panelIndex} noCloseButton>
+			<GalleryPanel onSelect={handleSelect} />
+			<ImageViewerPanel
+				index={selectedIndex ?? 0}
+				onBack={handleBackToGallery}
+				onNext={handleNext}
+				onPrev={handlePrev}
+			/>
+		</Panels>
+	);
+}
 
 export default MainPanel;
